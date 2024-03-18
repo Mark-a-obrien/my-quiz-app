@@ -29,7 +29,7 @@ const Quize = () => {
     }]
   });
   const [questionNum, setQuestionNum] = useState<number>(0);
-  const [CorrectAnswer, setCorrectAnswer] = useState<boolean>(false);
+  const [correctAnswer, setCorrectAnswer] = useState<boolean>(false);
 
   // Fetches date from adviceslip api
   async function getAdvice() {
@@ -45,7 +45,8 @@ const Quize = () => {
 
   // moves to next question
   const nextQuestion = () => {
-    setQuestionNum(questionNum+1)
+    setCorrectAnswer(false);
+    setQuestionNum(questionNum+1);
   }
 
   // when an answer is clicked checks if it is the correct answer
@@ -71,10 +72,6 @@ const Quize = () => {
     const answers:Array<string> = [...data.results[questionNum].incorrect_answers, data.results[questionNum].correct_answer]
     
     return (
-      // data.results[questionNum].incorrect_answers.map((answer, index) => 
-      //     <div>
-      //     </div>
-      //   )
       <div className="grid grid-cols-2 gap-2">
         {randomizeAnswerPositions(answers.length, answers)}
       </div>
@@ -111,7 +108,7 @@ const Quize = () => {
 
       {displayQuestion()}
 
-      {displayAnswers()}
+      {!correctAnswer ? displayAnswers() : <h1>Well done the correct answer is <strong>{data.results[questionNum].correct_answer}</strong></h1>}
 
       <button onClick={nextQuestion} className="p-2 bg-orange-700 rounded-lg hover:opacity-80">Next Question</button>
     </section>
@@ -121,11 +118,9 @@ const Quize = () => {
 // formats the text provide for question by the api 
 const formatQuestionText = (text:string) => {
   text = text
-        .replaceAll("&#039;", "\'")
+        .replaceAll("&#039;", "'")
         .replaceAll("&quot;", "\"");
   return text;
 }
 
-console.log(formatQuestionText("&#039;Hell0&#039;"));
-console.log(formatQuestionText("&quot;Hell0&quot;"));
 export default Quize;
