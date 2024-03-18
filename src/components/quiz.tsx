@@ -64,7 +64,8 @@ const Quize = () => {
   }, [questionNum])
 
 
-  // Fetches data from api when page is loaded
+  //  *** Uncomment this when uploading to the master  ***
+  // Fetches data from api when the page is initially loaded 
   useEffect(() => {
     data.response_code === "1" && fetchData();
   }, [data])
@@ -81,6 +82,11 @@ const Quize = () => {
       event.target.classList.add("bg-red-500");
     }
 
+  }
+
+  // display category 
+  const dispalyCategory = () => {
+    return <h3 className="text-xl font-semibold">{formatQuestionText(data.results[questionNum].category)}</h3>
   }
 
   // display question 
@@ -127,6 +133,8 @@ const Quize = () => {
 
     <section className="quiz flex flex-col justify-center gap-32 items-center text-white">
 
+      {dispalyCategory()}
+
       <div className="flex flex-col items-center justify-between h-64">
         {displayQuestion()}
         {!correctAnswer ? displayAnswers() : <h1>Well done the correct answer is <strong>{data.results[questionNum].correct_answer}</strong></h1>}
@@ -147,6 +155,7 @@ const formatQuestionText = (text:string) => {
         .replaceAll("&#039;", "'")
         .replaceAll("&quot;", "\"")
         .replaceAll("&eacute;", "É")
+        .replaceAll("&amp;", "&")
   return text;
 }
 
