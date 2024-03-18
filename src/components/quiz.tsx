@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import Question from "./question";
 import Answer from "./answer";
 
 interface Advice {
@@ -17,6 +18,7 @@ interface Advice {
 
 const Quize = () => {
 
+  let numQuestionToFetch = 10; // Number of questions to fetch from api
   const [data, setData] = useState<Advice>({
     response_code: "0",
     results: [{
@@ -32,22 +34,35 @@ const Quize = () => {
   const [correctAnswer, setCorrectAnswer] = useState<boolean>(false);
 
   // Fetches date from adviceslip api
-  async function getAdvice() {
-    const response = await fetch(`https://opentdb.com/api.php?amount=10`);
-    const advice = await response.json();
+  async function fetchData() {
 
-    if (advice.response_code === 0) {
-      setData(advice);
-      console.log(advice)
+    const response = await fetch(`https://opentdb.com/api.php?amount=${numQuestionToFetch}`);
+    const quiz = await response.json();
+
+    if (quiz.response_code === 0) {
+      setData(() => quiz);
+      console.log(quiz);
+      return
     }
-    console.log(data.results[0].question)
   }
 
   // moves to next question
   const nextQuestion = () => {
     setCorrectAnswer(false);
+    
+    console.log(questionNum);
+    if (questionNum === numQuestionToFetch) { // checks if more questions needs to be fetched
+      fetchData();
+      console.log(questionNum);
+    }
     setQuestionNum(questionNum+1);
   }
+
+  // checks if questionNum equals 9 each time it is updated
+  useEffect(() => {
+    questionNum === numQuestionToFetch && setQuestionNum(0);
+  }, [questionNum])
+  
 
   // when an answer is clicked checks if it is the correct answer
   const handleClick = (event: { target: { classList: { add: (arg0: string) => any } } }, answer:string) => {
@@ -64,7 +79,7 @@ const Quize = () => {
 
   // display question 
   const displayQuestion= () => {
-    return formatQuestionText(data.results[questionNum].question);
+    return <Question question={formatQuestionText(data.results[questionNum].question)} />
   }
 
   // displays each answer fetch as a Answer compentent
@@ -72,7 +87,7 @@ const Quize = () => {
     const answers:Array<string> = [...data.results[questionNum].incorrect_answers, data.results[questionNum].correct_answer]
     
     return (
-      <div className="grid grid-cols-2 gap-2">
+      <div className="grid grid-cols-2 gap-6">
         {randomizeAnswerPositions(answers.length, answers)}
       </div>
       )
@@ -91,11 +106,12 @@ const Quize = () => {
         let rand = getRandomInt(amountOfValues);
         if (!currentValues.includes(rand)) {
           currentValues.push(rand);
-          randomizedAnswers.push(<Answer key={rand} answer={answers[rand]} handleClick={handleClick} />);
+          const answer = formatQuestionText(answers[rand])
+          randomizedAnswers.push(<Answer key={rand} answer={answer} handleClick={handleClick} />);
       }
     }
   
-    console.log(randomizedAnswers);
+    // console.log(randomizedAnswers);
    
     return randomizedAnswers;
   }
@@ -103,14 +119,19 @@ const Quize = () => {
 
   return (
 
-    <section className="quiz flex flex-col items-center text-white">
-      <button onClick={getAdvice} className="p-2 bg-blue-600 rounded-lg hover:opacity-80">Generate quiz</button>
+    <section className="quiz flex flex-col justify-center gap-32 items-center text-white">
+      
 
-      {displayQuestion()}
+      <div className="flex flex-col items-center justify-between h-64">
+        {displayQuestion()}
+        {!correctAnswer ? displayAnswers() : <h1>Well done the correct answer is <strong>{data.results[questionNum].correct_answer}</strong></h1>}
+      </div>
 
-      {!correctAnswer ? displayAnswers() : <h1>Well done the correct answer is <strong>{data.results[questionNum].correct_answer}</strong></h1>}
-
-      <button onClick={nextQuestion} className="p-2 bg-orange-700 rounded-lg hover:opacity-80">Next Question</button>
+      <div className="flex gap-6 ">
+        <button onClick={fetchData} className="p-2 bg-blue-600 border-4 border-black rounded-lg hover:opacity-80">Generate quiz</button>
+        <button onClick={nextQuestion} className="p-2 bg-orange-700 border-4 border-black rounded-lg hover:opacity-80">Next Question</button>
+        
+      </div>
     </section>
   )
 }
@@ -119,7 +140,8 @@ const Quize = () => {
 const formatQuestionText = (text:string) => {
   text = text
         .replaceAll("&#039;", "'")
-        .replaceAll("&quot;", "\"");
+        .replaceAll("&quot;", "\"")
+        .replaceAll("&eacute;", "É")
   return text;
 }
 
