@@ -20,7 +20,7 @@ const Quize = () => {
 
   let numQuestionToFetch = 10; // Number of questions to fetch from api
   const [data, setData] = useState<Advice>({
-    response_code: "0",
+    response_code: "1",
     results: [{
       category:"dumby data",
       correct_answer:"dumby data",
@@ -30,19 +30,19 @@ const Quize = () => {
       type:"multiple"
     }]
   });
+
   const [questionNum, setQuestionNum] = useState<number>(0);
   const [correctAnswer, setCorrectAnswer] = useState<boolean>(false);
 
   // Fetches date from adviceslip api
   async function fetchData() {
-
     const response = await fetch(`https://opentdb.com/api.php?amount=${numQuestionToFetch}`);
     const quiz = await response.json();
 
     if (quiz.response_code === 0) {
       setData(() => quiz);
       console.log(quiz);
-      return
+      return quiz;
     }
   }
 
@@ -51,7 +51,7 @@ const Quize = () => {
     setCorrectAnswer(false);
     
     console.log(questionNum);
-    if (questionNum === numQuestionToFetch) { // checks if more questions needs to be fetched
+    if (questionNum === numQuestionToFetch-1) { // checks if more questions needs to be fetched
       fetchData();
       console.log(questionNum);
     }
@@ -60,8 +60,14 @@ const Quize = () => {
 
   // checks if questionNum equals 9 each time it is updated
   useEffect(() => {
-    questionNum === numQuestionToFetch && setQuestionNum(0);
+    questionNum === numQuestionToFetch-1 && setQuestionNum(0);
   }, [questionNum])
+
+
+  // Fetches data from api when page is loaded
+  useEffect(() => {
+    data.response_code === "1" && fetchData();
+  }, [data])
   
 
   // when an answer is clicked checks if it is the correct answer
@@ -116,11 +122,10 @@ const Quize = () => {
     return randomizedAnswers;
   }
 
-
+  
   return (
 
     <section className="quiz flex flex-col justify-center gap-32 items-center text-white">
-      
 
       <div className="flex flex-col items-center justify-between h-64">
         {displayQuestion()}
@@ -128,10 +133,10 @@ const Quize = () => {
       </div>
 
       <div className="flex gap-6 ">
-        <button onClick={fetchData} className="p-2 bg-blue-600 border-4 border-black rounded-lg hover:opacity-80">Generate quiz</button>
-        <button onClick={nextQuestion} className="p-2 bg-orange-700 border-4 border-black rounded-lg hover:opacity-80">Next Question</button>
-        
+        {/* <button onClick={fetchData} className="p-2 bg-blue-600 border-4 border-black rounded-lg hover:bg-opacity-80">Generate quiz</button> */}
+        <button onClick={nextQuestion} className="p-2 bg-orange-700 border-4 border-black rounded-lg hover:bg-opacity-80">Next Question</button>
       </div>
+      
     </section>
   )
 }
