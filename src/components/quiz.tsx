@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import Question from "./question";
 import Answer from "./answer";
+import { MouseEvent } from "react";
 
 interface Advice {
   response_code: string,
@@ -16,7 +17,7 @@ interface Advice {
 
 
 
-const Quize = () => {
+const Quize = ({category}: {category:string}) => {
 
   let numQuestionToFetch = 10; // Number of questions to fetch from api
   const [data, setData] = useState<Advice>({
@@ -36,7 +37,8 @@ const Quize = () => {
 
   // Fetches date from adviceslip api
   async function fetchData() {
-    const response = await fetch(`https://opentdb.com/api.php?amount=${numQuestionToFetch}`);
+    const fetchUrl = `https://opentdb.com/api.php?amount=${numQuestionToFetch}${category && `&category=${category}`}`;
+    const response = await fetch(fetchUrl);
     const quiz = await response.json();
 
     if (quiz.response_code === 0) {
@@ -49,37 +51,36 @@ const Quize = () => {
   // moves to next question
   const nextQuestion = () => {
     setCorrectAnswer(false);
-    
-    console.log(questionNum);
-    if (questionNum === numQuestionToFetch-1) { // checks if more questions needs to be fetched
-      fetchData();
-      console.log(questionNum);
-    }
-    setQuestionNum(questionNum+1);
+      setQuestionNum(() => questionNum+1);
   }
 
-  // checks if questionNum equals 9 each time it is updated
+  // checks if questionNum equals numQuestionToFetch-1 each time it is updated
   useEffect(() => {
-    questionNum === numQuestionToFetch-1 && setQuestionNum(0);
+    console.log(questionNum);
+
+    if (questionNum === numQuestionToFetch-1) {
+      setQuestionNum(0);
+      fetchData();
+    }
   }, [questionNum])
 
 
   //  *** Uncomment this when uploading to the master  ***
   // Fetches data from api when the page is initially loaded 
-  useEffect(() => {
-    data.response_code === "1" && fetchData();
-  }, [data])
+  // useEffect(() => {
+  //   data.response_code === "1" && fetchData();
+  // }, [data])
   
 
   // when an answer is clicked checks if it is the correct answer
-  const handleClick = (event: { target: { classList: { add: (arg0: string) => any } } }, answer:string) => {
+  const handleClick = (event:MouseEvent, answer:string) => {
 
     if (answer === data.results[questionNum].correct_answer) {
       setCorrectAnswer(true);
       // setScore(score+1);
       // setCurrentData(currentData+1)
     } else {
-      event.target.classList.add("bg-red-500");
+      (event.target as Element).classList.add("bg-red-500"); // changes the background color to blue when clicked
     }
 
   }
@@ -141,7 +142,7 @@ const Quize = () => {
       </div>
 
       <div className="flex gap-6 ">
-        {/* <button onClick={fetchData} className="p-2 bg-blue-600 border-4 border-black rounded-lg hover:bg-opacity-80">Generate quiz</button> */}
+        <button onClick={fetchData} className="p-2 bg-blue-600 border-4 border-black rounded-lg hover:bg-opacity-80">Generate quiz</button>
         <button onClick={nextQuestion} className="p-2 bg-orange-700 border-4 border-black rounded-lg hover:bg-opacity-80">Next Question</button>
       </div>
       
@@ -156,6 +157,12 @@ const formatQuestionText = (text:string) => {
         .replaceAll("&quot;", "\"")
         .replaceAll("&eacute;", "É")
         .replaceAll("&amp;", "&")
+        .replaceAll("&reg;", "®")
+        .replaceAll("&trade;", "™")
+        .replaceAll("&oacute;", "Ó")
+        .replaceAll("&Aring;", "å")
+        
+        
   return text;
 }
 
