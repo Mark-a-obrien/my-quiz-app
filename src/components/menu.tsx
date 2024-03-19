@@ -38,7 +38,7 @@ const Menu = ({handleSubmit}: {handleSubmit:Function}) => {
   return (
     <section className="menu flex flex-col justify-center gap-32 items-center text-white">
       <form method="" onChange={e => handleSubmit(e)}>
-        <DropDown options={options}/>
+        <DropDown options={options} label="Choose a Category"/>
       </form>
     </section>
   )
