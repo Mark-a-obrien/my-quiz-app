@@ -60,7 +60,6 @@ const Quize = ({category, difficulty, questionType}: {category:string, difficult
     console.log(questionNum);
 
     if (questionNum === numQuestionToFetch-1) {
-      
       fetchData(numQuestionToFetch, category);
     }
   }, [questionNum])
@@ -78,6 +77,8 @@ const Quize = ({category, difficulty, questionType}: {category:string, difficult
 
   // when an answer is clicked checks if it is the correct answer
   const handleClick = (event:MouseEvent, answer:string) => {
+
+    console.log(event.target)
 
     if (answer === data.results[questionNum].correct_answer) {
       setCorrectAnswer(true);
@@ -157,7 +158,6 @@ const Quize = ({category, difficulty, questionType}: {category:string, difficult
   }
   
   return (
-
     <section className="quiz flex flex-col justify-center gap-32 items-center text-white">
 
       {handleLoadingNewData()}
