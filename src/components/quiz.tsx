@@ -36,14 +36,31 @@ const Quize = ({category}: {category:string}) => {
   const [correctAnswer, setCorrectAnswer] = useState<boolean>(false);
 
   // Fetches date from adviceslip api
-  async function fetchData() {
+  async function fetchData(numQuestionToFetch:number, category:string) {
     const fetchUrl = `https://opentdb.com/api.php?amount=${numQuestionToFetch}${category && `&category=${category}`}`;
     const response = await fetch(fetchUrl);
     const quiz = await response.json();
 
-    if (quiz.response_code === 0) {
-      setData(() => quiz);
-      console.log(quiz);
+    
+    //  *** Uncomment this when uploading to the master  ***
+    // if (quiz.response_code !== 0 && response.status !== 200) {
+    //   return {
+    //     response_code: "1",
+    //     results: [{
+    //       category:"dumby data",
+    //       correct_answer:"dumby data",
+    //       difficulty:"easy",
+    //       incorrect_answers:["dumby data", "dumby data", "dumby data"],
+    //       question:"dumby data",
+    //       type:"multiple"
+    //     }]
+    //   }
+    // } 
+
+    if (quiz.response_code === 0 && response.status === 200) {
+      console.log("response_code : ", response.status);
+      setData(quiz);
+      setQuestionNum( () => 0);
       return quiz;
     }
   }
@@ -59,8 +76,8 @@ const Quize = ({category}: {category:string}) => {
     console.log(questionNum);
 
     if (questionNum === numQuestionToFetch-1) {
-      setQuestionNum(0);
-      fetchData();
+      
+      fetchData(numQuestionToFetch, category);
     }
   }, [questionNum])
 
@@ -68,7 +85,10 @@ const Quize = ({category}: {category:string}) => {
   //  *** Uncomment this when uploading to the master  ***
   // Fetches data from api when the page is initially loaded 
   // useEffect(() => {
-  //   data.response_code === "1" && fetchData();
+  //   console.log(data)
+  //   data.response_code === "1" && updateData();
+
+  //   data.response_code === "1" && console.log("fetched");
   // }, [data])
   
 
@@ -129,20 +149,43 @@ const Quize = ({category}: {category:string}) => {
     return randomizedAnswers;
   }
 
+  const updateData = async () => {
+    setData(await fetchData(numQuestionToFetch, category));
+  }
+
+  // displays Loading... while fetching data from the api
+  const handleLoadingNewData = () => {
+    if (questionNum === numQuestionToFetch-1) {
+      return <p>Loading...</p>;
+    }
+
+    return (
+      <>
+      {dispalyCategory()}
+      <div className="flex flex-col items-center justify-between h-64">
+        {displayQuestion()}
+        {(!correctAnswer ? displayAnswers() : <h1>Well done the correct answer is <strong>{data.results[questionNum].correct_answer}</strong></h1>)}
+      </div>
+      </>
+    )
+  }
   
   return (
 
     <section className="quiz flex flex-col justify-center gap-32 items-center text-white">
 
-      {dispalyCategory()}
+      {/* {dispalyCategory()} */}
 
-      <div className="flex flex-col items-center justify-between h-64">
+      {/* <div className="flex flex-col items-center justify-between h-64">
         {displayQuestion()}
-        {!correctAnswer ? displayAnswers() : <h1>Well done the correct answer is <strong>{data.results[questionNum].correct_answer}</strong></h1>}
-      </div>
+        {questionNum !== numQuestionToFetch-1 ? (!correctAnswer ? displayAnswers() : <h1>Well done the correct answer is <strong>{data.results[questionNum].correct_answer}</strong></h1>) : <p>Loading...</p>}
+        {handleLoadingNewData()}
+      </div> */}
+
+      {handleLoadingNewData()}
 
       <div className="flex gap-6 ">
-        <button onClick={fetchData} className="p-2 bg-blue-600 border-4 border-black rounded-lg hover:bg-opacity-80">Generate quiz</button>
+        <button onClick={updateData} className="p-2 bg-blue-600 border-4 border-black rounded-lg hover:bg-opacity-80">Generate quiz</button>
         <button onClick={nextQuestion} className="p-2 bg-orange-700 border-4 border-black rounded-lg hover:bg-opacity-80">Next Question</button>
       </div>
       
@@ -161,8 +204,6 @@ const formatQuestionText = (text:string) => {
         .replaceAll("&trade;", "™")
         .replaceAll("&oacute;", "Ó")
         .replaceAll("&Aring;", "å")
-        
-        
   return text;
 }
 
