@@ -38,11 +38,19 @@ const Menu = ({handleSubmit}: {handleSubmit:Function}) => {
     {value:"hard", label: "Hard"},
   ]
 
+  const typeoptions = [
+    {value:"any", label: "Any Type"},
+    {value:"multiple", label: "Multiple Choice"},
+    {value:"boolean", label: "True / False"},
+  ]
+
+
   return (
     <section className="menu flex flex-col justify-center gap-32 items-center text-white">
       <form className="flex flex-col gap-4" method="" onChange={e => handleSubmit(e)}>
         <DropDown options={categoryOptions} label="Choose a Category" name="category"/>
         <DropDown options={difficultyOptions} label="Choose a Difficulty" name="difficulty"/>
+        <DropDown options={typeoptions} label="Choose a Type" name="type"/>
       </form>
     </section>
   )
