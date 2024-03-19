@@ -41,22 +41,6 @@ const Quize = ({category}: {category:string}) => {
     const response = await fetch(fetchUrl);
     const quiz = await response.json();
 
-    
-    //  *** Uncomment this when uploading to the master  ***
-    // if (quiz.response_code !== 0 && response.status !== 200) {
-    //   return {
-    //     response_code: "1",
-    //     results: [{
-    //       category:"dumby data",
-    //       correct_answer:"dumby data",
-    //       difficulty:"easy",
-    //       incorrect_answers:["dumby data", "dumby data", "dumby data"],
-    //       question:"dumby data",
-    //       type:"multiple"
-    //     }]
-    //   }
-    // } 
-
     if (quiz.response_code === 0 && response.status === 200) {
       console.log("response_code : ", response.status);
       setData(quiz);
@@ -84,12 +68,12 @@ const Quize = ({category}: {category:string}) => {
 
   //  *** Uncomment this when uploading to the master  ***
   // Fetches data from api when the page is initially loaded 
-  // useEffect(() => {
-  //   console.log(data)
-  //   data.response_code === "1" && updateData();
+  useEffect(() => {
+    console.log(data)
+    data.response_code === "1" && fetchData(numQuestionToFetch, category);
 
-  //   data.response_code === "1" && console.log("fetched");
-  // }, [data])
+    data.response_code === "1" && console.log("fetched");
+  }, [data])
   
 
   // when an answer is clicked checks if it is the correct answer
@@ -149,15 +133,9 @@ const Quize = ({category}: {category:string}) => {
     return randomizedAnswers;
   }
 
-  const updateData = async () => {
-    setData(await fetchData(numQuestionToFetch, category));
-  }
-
   // displays Loading... while fetching data from the api
   const handleLoadingNewData = () => {
-    if (questionNum === numQuestionToFetch-1) {
-      return <p>Loading...</p>;
-    }
+    if (questionNum === numQuestionToFetch-1 || data.response_code === "1") return <p>Loading...</p>;
 
     return (
       <>
@@ -174,18 +152,10 @@ const Quize = ({category}: {category:string}) => {
 
     <section className="quiz flex flex-col justify-center gap-32 items-center text-white">
 
-      {/* {dispalyCategory()} */}
-
-      {/* <div className="flex flex-col items-center justify-between h-64">
-        {displayQuestion()}
-        {questionNum !== numQuestionToFetch-1 ? (!correctAnswer ? displayAnswers() : <h1>Well done the correct answer is <strong>{data.results[questionNum].correct_answer}</strong></h1>) : <p>Loading...</p>}
-        {handleLoadingNewData()}
-      </div> */}
-
       {handleLoadingNewData()}
 
       <div className="flex gap-6 ">
-        <button onClick={updateData} className="p-2 bg-blue-600 border-4 border-black rounded-lg hover:bg-opacity-80">Generate quiz</button>
+        <button onClick={() => fetchData(numQuestionToFetch, category)} className="p-2 bg-blue-600 border-4 border-black rounded-lg hover:bg-opacity-80">Generate quiz</button>
         <button onClick={nextQuestion} className="p-2 bg-orange-700 border-4 border-black rounded-lg hover:bg-opacity-80">Next Question</button>
       </div>
       

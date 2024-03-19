@@ -19,11 +19,11 @@ function App() {
 
   return (
     <div className="App bg-gray-800">
-      <main className='flex justify-center h-screen'>
+      <main className='flex flex-col justify-center items-center gap-4 h-screen text-white'>
         
         {showQuize ? <Quize category={category}/> : <Menu handleSubmit={handleSubmit}/>}
 
-        <button onClick={handleClick}>Click me!</button>
+        {!showQuize && <button className='p-2 bg-green-600 border-4 border-black rounded-lg hover:bg-opacity-80' onClick={handleClick}>Creat Quiz</button>}
       </main>
 
     </div>
