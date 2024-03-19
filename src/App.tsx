@@ -23,7 +23,7 @@ function App() {
         
         {showQuize ? <Quize category={category}/> : <Menu handleSubmit={handleSubmit}/>}
 
-        {!showQuize && <button className='p-2 bg-green-600 border-4 border-black rounded-lg hover:bg-opacity-80' onClick={handleClick}>Creat Quiz</button>}
+        {!showQuize && <button className='p-2 font-sim bg-green-600 border-4 border-black rounded-lg hover:bg-opacity-80' onClick={handleClick}>Creat Quiz</button>}
       </main>
 
     </div>
