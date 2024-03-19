@@ -1,9 +1,9 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Question from "./question";
 import Answer from "./answer";
 import { MouseEvent } from "react";
 
-interface Advice {
+interface Data {
   response_code: string,
   results: [{
     category:string,
@@ -15,12 +15,12 @@ interface Advice {
   }];
 }
 
-
+type Answer = "correct" | "wrong" |"not answered";
 
 const Quize = ({category, difficulty, questionType}: {category:string, difficulty:string, questionType:string}) => {
 
   let numQuestionToFetch = 10; // Number of questions to fetch from api
-  const [data, setData] = useState<Advice>({
+  const [data, setData] = useState<Data>({
     response_code: "1",
     results: [{
       category:"dumby data",
@@ -33,7 +33,7 @@ const Quize = ({category, difficulty, questionType}: {category:string, difficult
   });
 
   const [questionNum, setQuestionNum] = useState<number>(0);
-  const [correctAnswer, setCorrectAnswer] = useState<boolean>(false);
+  const [correctAnswer, setCorrectAnswer] = useState<Answer>("not answered");
 
   // Fetches date from adviceslip api
   async function fetchData(numQuestionToFetch:number, category:string) {
@@ -51,7 +51,7 @@ const Quize = ({category, difficulty, questionType}: {category:string, difficult
 
   // moves to next question
   const nextQuestion = () => {
-    setCorrectAnswer(false);
+    setCorrectAnswer("not answered");
       setQuestionNum(() => questionNum+1);
   }
 
@@ -79,12 +79,10 @@ const Quize = ({category, difficulty, questionType}: {category:string, difficult
   const handleClick = (event:MouseEvent, answer:string) => {
 
     console.log(event.target)
-
     if (answer === data.results[questionNum].correct_answer) {
-      setCorrectAnswer(true);
-      // setScore(score+1);
-      // setCurrentData(currentData+1)
+      setCorrectAnswer("correct");
     } else {
+      setCorrectAnswer("wrong");
       (event.target as Element).classList.add("bg-red-500"); // changes the background color to blue when clicked
     }
 
@@ -107,7 +105,7 @@ const Quize = ({category, difficulty, questionType}: {category:string, difficult
 
   // displays each answer fetch as a Answer compentent
   const displayAnswers = () => {
-    const answers:Array<string> = [...data.results[questionNum].incorrect_answers, data.results[questionNum].correct_answer]
+    const answers:Array<string> = [data.results[questionNum].correct_answer, ...data.results[questionNum].incorrect_answers]
     
     return (
       <div className="grid grid-cols-2 gap-6">
@@ -134,7 +132,7 @@ const Quize = ({category, difficulty, questionType}: {category:string, difficult
       }
     }
   
-    // console.log(randomizedAnswers);
+    console.log(answers[0]);
    
     return randomizedAnswers;
   }
@@ -142,6 +140,8 @@ const Quize = ({category, difficulty, questionType}: {category:string, difficult
   // displays Loading... while fetching data from the api
   const handleLoadingNewData = () => {
     if (questionNum === numQuestionToFetch-1 || data.response_code === "1") return <p>Loading...</p>;
+
+
 
     return (
       <>
@@ -151,11 +151,15 @@ const Quize = ({category, difficulty, questionType}: {category:string, difficult
       </div>
       <div className="flex flex-col items-center justify-between h-64">
         {displayQuestion()}
-        {(!correctAnswer ? displayAnswers() : <h1>Well done the correct answer is <strong>{data.results[questionNum].correct_answer}</strong></h1>)}
+        {correctAnswer === "not answered" ? displayAnswers() 
+        : correctAnswer === "correct" ? <h1 className="text-green-400">Well done the correct answer is <strong>{data.results[questionNum].correct_answer}</strong></h1>
+        : <h1 className="text-red-400">Incorrect the correct answer is <strong>{data.results[questionNum].correct_answer}</strong></h1>}
       </div>
       </>
     )
   }
+
+
   
   return (
     <section className="quiz flex flex-col justify-center gap-32 items-center text-white">
