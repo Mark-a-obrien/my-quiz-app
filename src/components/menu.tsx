@@ -2,7 +2,7 @@ import DropDown from "./dropDown"
 
 const Menu = ({handleSubmit}: {handleSubmit:Function}) => {
 
-  const options = [
+  const categoryOptions = [
     {value:"any", label: "Any Category"},
     {value:"9", label: "General Knowledge"},
     {value:"10", label: "Entertainment: Books"},
@@ -28,17 +28,21 @@ const Menu = ({handleSubmit}: {handleSubmit:Function}) => {
     {value:"30", label: "Science: Gadgets"},
     {value:"31", label: "Entertainment: Japanese Anime & Manga"},
     {value:"32", label: "Entertainment: Cartoon & Animations"},
-  ];
+  ]; 
 
-  // const handleSubmit = (e:any) => {
-  //   e.preventDefault();
-  //   console.log(e.target.value);
-  // }
+
+  const difficultyOptions = [
+    {value:"any", label: "Any Difficulty"},
+    {value:"easy", label: "Easy"},
+    {value:"medium", label: "Medium"},
+    {value:"hard", label: "Hard"},
+  ]
 
   return (
     <section className="menu flex flex-col justify-center gap-32 items-center text-white">
-      <form method="" onChange={e => handleSubmit(e)}>
-        <DropDown options={options} label="Choose a Category"/>
+      <form className="flex flex-col gap-4" method="" onChange={e => handleSubmit(e)}>
+        <DropDown options={categoryOptions} label="Choose a Category" name="category"/>
+        <DropDown options={difficultyOptions} label="Choose a Difficulty" name="difficulty"/>
       </form>
     </section>
   )

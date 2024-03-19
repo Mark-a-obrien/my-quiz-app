@@ -17,7 +17,7 @@ interface Advice {
 
 
 
-const Quize = ({category}: {category:string}) => {
+const Quize = ({category, difficulty}: {category:string, difficulty:string}) => {
 
   let numQuestionToFetch = 10; // Number of questions to fetch from api
   const [data, setData] = useState<Advice>({
@@ -37,7 +37,7 @@ const Quize = ({category}: {category:string}) => {
 
   // Fetches date from adviceslip api
   async function fetchData(numQuestionToFetch:number, category:string) {
-    const fetchUrl = `https://opentdb.com/api.php?amount=${numQuestionToFetch}${category && `&category=${category}`}`;
+    const fetchUrl = `https://opentdb.com/api.php?amount=${numQuestionToFetch}${category && `&category=${category}`} ${difficulty && `&difficulty=${difficulty}`}`;
     const response = await fetch(fetchUrl);
     const quiz = await response.json();
 
