@@ -94,6 +94,11 @@ const Quize = ({category}: {category:string}) => {
     return <h3 className="text-xl font-semibold">{formatQuestionText(data.results[questionNum].category)}</h3>
   }
 
+  // displays difficulty 
+  const dispalyDifficulty = () => {
+    return <h3 className="text-lg font-semibold text-green-400">{formatQuestionText(data.results[questionNum].difficulty)}</h3>
+  }
+
   // display question 
   const displayQuestion= () => {
     return <Question question={formatQuestionText(data.results[questionNum].question)} />
@@ -139,7 +144,10 @@ const Quize = ({category}: {category:string}) => {
 
     return (
       <>
-      {dispalyCategory()}
+      <div>
+        {dispalyCategory()}
+        {dispalyDifficulty()}
+      </div>
       <div className="flex flex-col items-center justify-between h-64">
         {displayQuestion()}
         {(!correctAnswer ? displayAnswers() : <h1>Well done the correct answer is <strong>{data.results[questionNum].correct_answer}</strong></h1>)}
