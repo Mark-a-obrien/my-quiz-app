@@ -17,7 +17,7 @@ interface Data {
 
 type Answer = "correct" | "wrong" |"not answered";
 
-const Quize = ({category, difficulty, questionType}: {category:string, difficulty:string, questionType:string}) => {
+const Quize = ({category, difficulty, questionType, goToMenu}: {category:string, difficulty:string, questionType:string, goToMenu:any}) => {
 
   let numQuestionToFetch = 10; // Number of questions to fetch from api
   const [data, setData] = useState<Data>({
@@ -83,7 +83,7 @@ const Quize = ({category, difficulty, questionType}: {category:string, difficult
       setCorrectAnswer("correct");
     } else {
       setCorrectAnswer("wrong");
-      (event.target as Element).classList.add("bg-red-500"); // changes the background color to blue when clicked
+      // (event.target as Element).classList.add("bg-red-500"); // changes the background color to blue when clicked
     }
 
   }
@@ -151,7 +151,7 @@ const Quize = ({category, difficulty, questionType}: {category:string, difficult
       </div>
       <div className="flex flex-col items-center justify-between h-64">
         {displayQuestion()}
-        {correctAnswer === "not answered" ? displayAnswers() 
+        {correctAnswer === "not answered" ? displayAnswers() // displays the data depending if the user gave the correct answer, wrong answer or hasn't answerd 
         : correctAnswer === "correct" ? <h1 className="text-green-400">Well done the correct answer is <strong>{data.results[questionNum].correct_answer}</strong></h1>
         : <h1 className="text-red-400">Incorrect the correct answer is <strong>{data.results[questionNum].correct_answer}</strong></h1>}
       </div>
@@ -167,7 +167,7 @@ const Quize = ({category, difficulty, questionType}: {category:string, difficult
       {handleLoadingNewData()}
 
       <div className="flex gap-6 ">
-        <button onClick={() => fetchData(numQuestionToFetch, category)} className="p-2 bg-blue-600 border-4 border-black rounded-lg hover:bg-opacity-80">Generate quiz</button>
+        <button onClick={goToMenu} className="p-2 bg-blue-600 border-4 border-black rounded-lg hover:bg-opacity-80">Menu</button>
         <button onClick={nextQuestion} className="p-2 bg-orange-700 border-4 border-black rounded-lg hover:bg-opacity-80">Next Question</button>
       </div>
       

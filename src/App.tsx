@@ -15,6 +15,10 @@ function App() {
     setShowQuize(true);
   }
 
+  const goToMenu = () => {
+    setShowQuize(false);
+  }
+
   const handleSubmit = (e:any) => {
     e.preventDefault();
 
@@ -29,7 +33,7 @@ function App() {
     <div className="App bg-gray-800">
       <main className='flex flex-col justify-center items-center gap-4 h-screen text-white'>
         
-        {showQuize ? <Quize category={category} difficulty={difficulty} questionType={questionType}/> : <Menu handleSubmit={handleSubmit}/>}
+        {showQuize ? <Quize category={category} difficulty={difficulty} questionType={questionType} goToMenu={goToMenu}/> : <Menu handleSubmit={handleSubmit}/>}
 
         {!showQuize && <button className='p-2 font-sim bg-green-600 border-4 border-black rounded-lg hover:bg-opacity-80' onClick={handleClick}>Creat Quiz</button>}
       </main>
