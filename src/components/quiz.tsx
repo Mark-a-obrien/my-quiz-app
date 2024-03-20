@@ -17,12 +17,17 @@ interface Data {
 
 type Answer = "correct" | "wrong" |"not answered";
 
-// document.cookie = "score=0; SameSite=None; Secure";
+if (!Boolean(document.cookie)) document.cookie = "highScore=0; SameSite=None; Secure"; // Creates highScore cookie if it is not already created
 
 const getHighscoreCookie = () => {
   let num = parseInt(document.cookie.split("=")[1]);
-  // console.log(num);
+  console.log(Boolean(document.cookie));
+  console.log(document.cookie);
   return num;
+}
+
+const setToHighScore = (score:number) => {
+  document.cookie = `highScore=${score}; SameSite=None; Secure`;
 }
 
 const Quize = ({category, difficulty, questionType, goToMenu}: {category:string, difficulty:string, questionType:string, goToMenu:any}) => {
@@ -88,7 +93,7 @@ const Quize = ({category, difficulty, questionType, goToMenu}: {category:string,
 
   useEffect(() => {
     if (score > highScore) {
-      document.cookie = `score=${score}; SameSite=None; Secure`;
+      setToHighScore(score);
       setHighScore(() => score);
     }
     getHighscoreCookie();
