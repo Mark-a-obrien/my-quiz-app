@@ -17,6 +17,14 @@ interface Data {
 
 type Answer = "correct" | "wrong" |"not answered";
 
+// document.cookie = "score=0; SameSite=None; Secure";
+
+const getHighscoreCookie = () => {
+  let num = parseInt(document.cookie.split("=")[1]);
+  // console.log(num);
+  return num;
+}
+
 const Quize = ({category, difficulty, questionType, goToMenu}: {category:string, difficulty:string, questionType:string, goToMenu:any}) => {
 
   let numQuestionToFetch = 10; // Number of questions to fetch from api
@@ -34,6 +42,9 @@ const Quize = ({category, difficulty, questionType, goToMenu}: {category:string,
 
   const [questionNum, setQuestionNum] = useState<number>(0);
   const [correctAnswer, setCorrectAnswer] = useState<Answer>("not answered");
+  const [score, setScore] = useState<number>(0);
+  const [highScore, setHighScore] = useState<number>(getHighscoreCookie());
+
 
   // Fetches date from adviceslip api
   async function fetchData(numQuestionToFetch:number, category:string) {
@@ -42,7 +53,7 @@ const Quize = ({category, difficulty, questionType, goToMenu}: {category:string,
     const quiz = await response.json();
 
     if (quiz.response_code === 0 && response.status === 200) {
-      console.log("response_code : ", response.status);
+      // console.log("response_code : ", response.status);
       setData(quiz);
       setQuestionNum( () => 0);
       return quiz;
@@ -52,12 +63,12 @@ const Quize = ({category, difficulty, questionType, goToMenu}: {category:string,
   // moves to next question
   const nextQuestion = () => {
     setCorrectAnswer("not answered");
-      setQuestionNum(() => questionNum+1);
+    setQuestionNum(() => questionNum+1);
   }
 
   // checks if questionNum equals numQuestionToFetch-1 each time it is updated
   useEffect(() => {
-    console.log(questionNum);
+    // console.log(questionNum);
 
     if (questionNum === numQuestionToFetch-1) {
       fetchData(numQuestionToFetch, category);
@@ -68,19 +79,29 @@ const Quize = ({category, difficulty, questionType, goToMenu}: {category:string,
   //  *** Uncomment this when uploading to the master  ***
   // Fetches data from api when the page is initially loaded 
   useEffect(() => {
-    console.log(data)
+    // console.log(data)
     data.response_code === "1" && fetchData(numQuestionToFetch, category);
 
-    data.response_code === "1" && console.log("fetched");
+    // data.response_code === "1" && console.log("fetched");
   }, [data])
+  
+
+  useEffect(() => {
+    if (score > highScore) {
+      document.cookie = `score=${score}; SameSite=None; Secure`;
+      setHighScore(() => score);
+    }
+    getHighscoreCookie();
+  }, [score])
   
 
   // when an answer is clicked checks if it is the correct answer
   const handleClick = (event:MouseEvent, answer:string) => {
-
-    console.log(event.target)
+    
+    
     if (answer === data.results[questionNum].correct_answer) {
       setCorrectAnswer("correct");
+      setScore(() => score + 1);
     } else {
       setCorrectAnswer("wrong");
       // (event.target as Element).classList.add("bg-red-500"); // changes the background color to blue when clicked
@@ -91,6 +112,11 @@ const Quize = ({category, difficulty, questionType, goToMenu}: {category:string,
   // display category 
   const dispalyCategory = () => {
     return <h3 className="text-xl font-semibold">{formatQuestionText(data.results[questionNum].category)}</h3>
+  }
+
+  // display score 
+  const displayScore = () => {
+    return <h3 className="text-base font-semibold">Score: {score} | Highscore: {highScore}</h3>
   }
 
   // displays difficulty 
@@ -132,7 +158,7 @@ const Quize = ({category, difficulty, questionType, goToMenu}: {category:string,
       }
     }
   
-    console.log(answers[0]);
+    console.log("Answer : ", answers[0]);
    
     return randomizedAnswers;
   }
@@ -147,6 +173,7 @@ const Quize = ({category, difficulty, questionType, goToMenu}: {category:string,
       <>
       <div>
         {dispalyCategory()}
+        {displayScore()}
         {dispalyDifficulty()}
       </div>
       <div className="flex flex-col items-center justify-between h-64">
