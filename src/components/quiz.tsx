@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import Question from "./question";
 import Answer from "./answer";
 import { MouseEvent } from "react";
