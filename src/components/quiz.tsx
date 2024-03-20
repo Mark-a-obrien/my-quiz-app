@@ -162,11 +162,11 @@ const Quize = ({category, difficulty, questionType, goToMenu}: {category:string,
 
   
   return (
-    <section className="quiz flex flex-col justify-center gap-32 items-center text-white">
+    <section className="quiz flex flex-col justify-between items-center sm:py-10 py-4  h-full text-white">
 
       {handleLoadingNewData()}
 
-      <div className="flex gap-6 ">
+      <div className="flex gap-6">
         <button onClick={goToMenu} className="p-2 bg-blue-600 border-4 border-black rounded-lg hover:bg-opacity-80">Menu</button>
         <button onClick={nextQuestion} className="p-2 bg-orange-700 border-4 border-black rounded-lg hover:bg-opacity-80">Next Question</button>
       </div>
