@@ -19,14 +19,12 @@ type Answer = "correct" | "wrong" |"not answered";
 
 if (!Boolean(document.cookie)) document.cookie = "highScore=0; SameSite=None; Secure"; // Creates highScore cookie if it is not already created
 
-const getHighscoreCookie = () => {
+const getHighScoreCookie = () => {
   let num = parseInt(document.cookie.split("=")[1]);
-  console.log(Boolean(document.cookie));
-  console.log(document.cookie);
   return num;
 }
 
-const setToHighScore = (score:number) => {
+const setHighScoreCookie = (score:number) => {
   document.cookie = `highScore=${score}; SameSite=None; Secure`;
 }
 
@@ -48,7 +46,7 @@ const Quize = ({category, difficulty, questionType, goToMenu}: {category:string,
   const [questionNum, setQuestionNum] = useState<number>(0);
   const [correctAnswer, setCorrectAnswer] = useState<Answer>("not answered");
   const [score, setScore] = useState<number>(0);
-  const [highScore, setHighScore] = useState<number>(getHighscoreCookie());
+  const [highScore, setHighScore] = useState<number>(getHighScoreCookie());
 
 
   // Fetches date from adviceslip api
@@ -57,8 +55,8 @@ const Quize = ({category, difficulty, questionType, goToMenu}: {category:string,
     const response = await fetch(fetchUrl);
     const quiz = await response.json();
 
+    // if the data is fetched successfully the data will be displayed
     if (quiz.response_code === 0 && response.status === 200) {
-      // console.log("response_code : ", response.status);
       setData(quiz);
       setQuestionNum( () => 0);
       return quiz;
@@ -71,38 +69,31 @@ const Quize = ({category, difficulty, questionType, goToMenu}: {category:string,
     setQuestionNum(() => questionNum+1);
   }
 
-  // checks if questionNum equals numQuestionToFetch-1 each time it is updated
+  // If the user has gotten to last loaded question it will fetch new data
   useEffect(() => {
-    // console.log(questionNum);
-
     if (questionNum === numQuestionToFetch-1) {
       fetchData(numQuestionToFetch, category);
     }
   }, [questionNum])
 
 
-  //  *** Uncomment this when uploading to the master  ***
   // Fetches data from api when the page is initially loaded 
   useEffect(() => {
-    // console.log(data)
     data.response_code === "1" && fetchData(numQuestionToFetch, category);
-
-    // data.response_code === "1" && console.log("fetched");
   }, [data])
   
 
   useEffect(() => {
     if (score > highScore) {
-      setToHighScore(score);
+      setHighScoreCookie(score);
       setHighScore(() => score);
     }
-    getHighscoreCookie();
+    getHighScoreCookie();
   }, [score])
   
 
   // when an answer is clicked checks if it is the correct answer
   const handleClick = (event:MouseEvent, answer:string) => {
-    
     
     if (answer === data.results[questionNum].correct_answer) {
       setCorrectAnswer("correct");
@@ -145,7 +136,7 @@ const Quize = ({category, difficulty, questionType, goToMenu}: {category:string,
       )
   }
 
-  // randomizes the answers fetched
+  // Randomizes the order of answers fetched
   const randomizeAnswerPositions = (amountOfValues:number, answers:Array<string>) => {
     let currentValues:Array<number> = [];
     let randomizedAnswers:Array<React.JSX.Element> = [];
@@ -172,8 +163,6 @@ const Quize = ({category, difficulty, questionType, goToMenu}: {category:string,
   const handleLoadingNewData = () => {
     if (questionNum === numQuestionToFetch-1 || data.response_code === "1") return <p>Loading...</p>;
 
-
-
     return (
       <>
       <div>
@@ -191,8 +180,6 @@ const Quize = ({category, difficulty, questionType, goToMenu}: {category:string,
     )
   }
 
-
-  
   return (
     <section className="quiz flex flex-col justify-between items-center sm:py-10 py-4  h-full text-white">
 

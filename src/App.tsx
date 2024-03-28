@@ -11,7 +11,7 @@ function App() {
   const [questionType, setQuestionType] = useState<string>("");
 
 
-  const handleClick = () => {
+  const goToQuiz = () => {
     setShowQuize(true);
   }
 
@@ -35,7 +35,7 @@ function App() {
         
         {showQuize ? <Quize category={category} difficulty={difficulty} questionType={questionType} goToMenu={goToMenu}/> : <Menu handleSubmit={handleSubmit}/>}
 
-        {!showQuize && <button className='p-2 bg-violet-800 border-4 border-black rounded-lg hover:bg-opacity-80' onClick={handleClick}>Creat Quiz</button>}
+        {!showQuize && <button className='p-2 bg-violet-800 border-4 border-black rounded-lg hover:bg-opacity-80' onClick={goToQuiz}>Creat Quiz</button>}
       </main>
 
     </div>
